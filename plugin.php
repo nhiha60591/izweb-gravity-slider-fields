@@ -33,6 +33,12 @@ if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
 
             // Execute some javascript technicalitites for the field to load correctly
             add_action( 'gform_editor_js', array( $this, 'slider_gform_editor_js' ) );
+
+            // Add a script to the display of the particular form only if tos field is being used
+            add_action( 'init' , array( $this, 'gform_enqueue_scripts' ) );
+
+            // Add Choices Default Value
+            add_action( 'gform_editor_js_set_default_values', array( $this, 'set_choice_default_value') );
         }
 
         /**
@@ -54,23 +60,112 @@ if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
             }
             return $field_groups;
         }
+
+        /**
+         * Change title field
+         *
+         * @param $type
+         * @return string|void
+         */
         function slider_title_field($type){
             if ( $type == 'slider' ) {
                 return __('Slider', 'gravityforms');
             }
         }
+
+        /**
+         * Add Input Container
+         *
+         * @param $input
+         * @param $field
+         * @param $value
+         * @param $lead_id
+         * @param $form_id
+         * @return string
+         */
         function slider_input( $input, $field, $value, $lead_id, $form_id ){
             if ( $field["type"] == "slider" ) {
                 ob_start();
+                $css = isset( $field['cssClass'] ) ? $field['cssClass'] : '';
+                $current_label = '';
                 ?>
-                <div class="ginput_container">
-
+                <div id="<?php echo 'slider-'.$field['id']; ?>" class="ginput_container">
+                    <?php if( sizeof( $field['choices'] ) > 0 ): ?>
+                        <input type="hidden" name="<?php echo 'slider-'.$field['id']; ?>" value="<?php echo $value; ?>">
+                        <select style="display: none" class="gform_slider <?php echo $field["type"]." {$css}"; ?>">
+                        <?php foreach( $field['choices'] as $row): ?>
+                            <?php if( !empty( $row['isSelected'] ) && $row['isSelected']) $current_label = $row['text']; ?>
+                            <option value="<?php echo $row['value']; ?>" <?php selected( 1,$row['isSelected']); ?>><?php echo $row['text']; ?></option>
+                        <?php endforeach; ?>
+                        </select>
+                    <?php endif; ?>
+                    <script type="text/javascript">
+                        jQuery(document).ready( function( $ ) {
+                            var select = $( "#<?php echo 'slider-'.$field['id']; ?> select" );
+                            var max = select.length;
+                            var amount = $( '#<?php echo 'slider-'.$field['id']; ?> input[name="<?php echo 'slider-'.$field['id']; ?>"]');
+                            var value_sl = $( "#<?php echo 'slider-'.$field['id']; ?> .field-value label" );
+                            var slider = $( "<div id='slider'></div>" ).insertAfter( select ).slider({
+                                min: 1,
+                                max: 5,
+                                range: "min",
+                                value: select[ 0 ].selectedIndex + 1,
+                                slide: function( event, ui ) {
+                                    select[ 0 ].selectedIndex = ui.value - 1;
+                                    value_sl.html( select.find('option:selected').text() );
+                                    amount.val( select.find('option:selected').val() );
+                                }
+                            });
+                        });
+                    </script>
+                    <div class="field-value">
+                        <label><?php echo $current_label; ?></label>
+                    </div>
                 </div>
                 <?php
                 return ob_get_clean();
             }
             return $input;
         }
+        function slider_gform_editor_js(){
+            ?>
+            <script type='text/javascript'>
+                jQuery(document).ready(function ($) {
+                    //Add all textarea settings to the "TOS" field plus custom "tos_setting"
+                    // fieldSettings["tos"] = fieldSettings["textarea"] + ", .tos_setting"; // this will show all fields that Paragraph Text field shows plus my custom setting
+                    // from forms.js; can add custom "tos_setting" as well
+                    fieldSettings["slider"] = ".label_setting, .description_setting, .choices_setting, .admin_label_setting, .size_setting, .default_value_textarea_setting, .error_message_setting, .css_class_setting, .visibility_setting, .slider_setting"; //this will show all the fields of the Paragraph Text field minus a couple that I didn’t want to appear.
+                    //binding to the load field settings event to initialize the checkbox
+                    $(document).bind("gform_load_field_settings", function (event, field, form) {
+                        jQuery("#field_slider").attr("checked", field["field_slider"] == true);
+                        $("#field_slider_value").val(field["slider"]);
+                    });
+                });
+            </script>
+            <?php
+        }
+        function gform_enqueue_scripts(){
+            wp_enqueue_style( 'gform_izw_slider_style', '//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css' );
+            wp_register_script( 'gform_izw_slider_script', plugin_dir_url( __FILE__ )."assets/js/izweb-slider.js", array( 'jquery', 'jquery-ui-slider' ) );
+            wp_enqueue_script( 'gform_izw_slider_script' );
+        }
+        function set_choice_default_value(){
+            ?>
+            case "slider" :
+            field.enableChoiceValue = true;
+            if(!field.choices){
+                field.choices = new Array(
+                                    new Choice("<?php _e("Hate It", "gravityforms"); ?>", "-3", "0.00"),
+                                    new Choice("<?php _e("Dislike Somewhat", "gravityforms"); ?>", "-1", "0.00"),
+                                    new Choice("<?php _e("Ambivalent", "gravityforms"); ?>", "0", "0.00"),
+                                    new Choice("<?php _e("Like Somewhat", "gravityforms"); ?>", "1", "0.00"),
+                                    new Choice("<?php _e("Love It ", "gravityforms"); ?>", "3", "0.00")
+                                );
+            }
+            break;
+            <?php
+        }
+
     }
     new Izweb_Gravity_Slider();
 endif;
