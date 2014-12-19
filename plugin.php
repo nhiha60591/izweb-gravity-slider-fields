@@ -127,6 +127,10 @@ if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
             }
             return $input;
         }
+
+        /**
+         * Add Slider Form Editor Js
+         */
         function slider_gform_editor_js(){
             ?>
             <script type='text/javascript'>
@@ -144,11 +148,19 @@ if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
             </script>
             <?php
         }
+
+        /**
+         * Enqueue Script
+         */
         function gform_enqueue_scripts(){
             wp_enqueue_style( 'gform_izw_slider_style', '//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css' );
             wp_register_script( 'gform_izw_slider_script', plugin_dir_url( __FILE__ )."assets/js/izweb-slider.js", array( 'jquery', 'jquery-ui-slider' ) );
             wp_enqueue_script( 'gform_izw_slider_script' );
         }
+
+        /**
+         * Set choice default value
+         */
         function set_choice_default_value(){
             ?>
             case "slider" :
