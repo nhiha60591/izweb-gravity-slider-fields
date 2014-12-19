@@ -8,20 +8,29 @@ Author: Izweb Team
 Author URI: https://github.com/nhiha60591
 Text Domain: izweb-gravity-slider
 */
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
+
 // Check class exists
 if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
+
     // Create Class Izweb_Gravity_Slider
     class Izweb_Gravity_Slider{
+
         // Construct for class
         function __construct(){
+
+            // Add button to GF custom field
             add_filter('gform_add_field_buttons', array( $this, 'add_slider_fields' ) );
+
             // Adds title to GF custom field
             add_filter( 'gform_field_type_title' , array( $this, 'slider_title_field' ) );
+
             // Adds the input area to the external side
             add_action( 'gform_field_input' , array( $this, 'slider_input' ), 10, 5 );
+
             // Execute some javascript technicalitites for the field to load correctly
             add_action( 'gform_editor_js', array( $this, 'slider_gform_editor_js' ) );
         }
