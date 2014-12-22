@@ -91,8 +91,8 @@ if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
                 ?>
                 <div id="<?php echo 'slider-'.$field['id']; ?>" class="ginput_container">
                     <?php if( sizeof( $field['choices'] ) > 0 ): ?>
-                        <input type="hidden" name="<?php echo 'slider-'.$field['id']; ?>" value="<?php echo $value; ?>">
-                        <select style="display: none" class="gform_slider <?php echo $field["type"]." {$css}"; ?>">
+                        <input type="hidden" name="input_<?php echo $field['id']; ?>" id="<?php echo 'slider-input-'.$field['id']; ?>" value="">
+                        <select style="display: none;" class="gform_slider <?php echo $field["type"]." {$css}"; ?>">
                         <?php foreach( $field['choices'] as $row): ?>
                             <?php if( !empty( $row['isSelected'] ) && $row['isSelected']) $current_label = $row['text']; ?>
                             <option value="<?php echo $row['value']; ?>" <?php selected( 1,$row['isSelected']); ?>><?php echo $row['text']; ?></option>
@@ -103,11 +103,11 @@ if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
                         jQuery(document).ready( function( $ ) {
                             var select = $( "#<?php echo 'slider-'.$field['id']; ?> select" );
                             var max = select.length;
-                            var amount = $( '#<?php echo 'slider-'.$field['id']; ?> input[name="<?php echo 'slider-'.$field['id']; ?>"]');
+                            var amount = $( '#<?php echo 'slider-'.$field['id']; ?> input[name="input_<?php echo $field['id']; ?>"]');
                             var value_sl = $( "#<?php echo 'slider-'.$field['id']; ?> .field-value label" );
                             var slider = $( "<div id='slider'></div>" ).insertAfter( select ).slider({
                                 min: 1,
-                                max: 5,
+                                max: <?php echo sizeof( $field['choices']); ?>,
                                 range: "min",
                                 value: select[ 0 ].selectedIndex + 1,
                                 slide: function( event, ui ) {
@@ -138,7 +138,7 @@ if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
                     //Add all textarea settings to the "TOS" field plus custom "tos_setting"
                     // fieldSettings["tos"] = fieldSettings["textarea"] + ", .tos_setting"; // this will show all fields that Paragraph Text field shows plus my custom setting
                     // from forms.js; can add custom "tos_setting" as well
-                    fieldSettings["slider"] = ".label_setting, .description_setting, .choices_setting, .admin_label_setting, .size_setting, .default_value_textarea_setting, .error_message_setting, .css_class_setting, .visibility_setting, .slider_setting"; //this will show all the fields of the Paragraph Text field minus a couple that I didn’t want to appear.
+                    fieldSettings["slider"] = ".label_setting,.rules_setting,.form_field_required, .description_setting, .choices_setting, .admin_label_setting, .size_setting, .default_value_textarea_setting, .error_message_setting, .css_class_setting, .visibility_setting, .slider_setting"; //this will show all the fields of the Paragraph Text field minus a couple that I didn’t want to appear.
                     //binding to the load field settings event to initialize the checkbox
                     $(document).bind("gform_load_field_settings", function (event, field, form) {
                         jQuery("#field_slider").attr("checked", field["field_slider"] == true);
