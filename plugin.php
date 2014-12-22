@@ -91,7 +91,7 @@ if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
                 ?>
                 <div id="<?php echo 'slider-'.$field['id']; ?>" class="ginput_container">
                     <?php if( sizeof( $field['choices'] ) > 0 ): ?>
-                        <input type="hidden" name="input_<?php echo $field['id']; ?>" id="<?php echo 'slider-input-'.$field['id']; ?>" value="">
+                        <input type="hidden" name="input_<?php echo $field['id']; ?>" id="<?php echo 'slider-input-'.$field['id']; ?>" value="<?php echo $value ?>">
                         <select style="display: none;" class="gform_slider <?php echo $field["type"]." {$css}"; ?>">
                         <?php foreach( $field['choices'] as $row): ?>
                             <?php if( !empty( $row['isSelected'] ) && $row['isSelected']) $current_label = $row['text']; ?>
@@ -152,10 +152,11 @@ if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
         /**
          * Enqueue Script
          */
-        function gform_enqueue_scripts(){
+        function gform_enqueue_scripts( ){
             wp_enqueue_style( 'gform_izw_slider_style', '//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css' );
-            wp_register_script( 'gform_izw_slider_script', plugin_dir_url( __FILE__ )."assets/js/izweb-slider.js", array( 'jquery', 'jquery-ui-slider' ) );
-            wp_enqueue_script( 'gform_izw_slider_script' );
+            /*wp_register_script( 'gform_izw_slider_script', plugin_dir_url( __FILE__ )."assets/js/izweb-slider.js", array( 'jquery', 'jquery-ui-slider' ) );*/
+            wp_enqueue_script( 'jquery' );
+            wp_enqueue_script( 'jquery-ui-slider' );
         }
 
         /**
