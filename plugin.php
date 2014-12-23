@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Izweb Gravity Slider Fields
+Plugin Name: Cigar Sense GF Sliders
 Plugin URI: https://github.com/nhiha60591/izweb-gravity-slider-fields/
 Description: Add Gravity Slider Fields
 Version: 1.0.0
@@ -94,8 +94,8 @@ if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
                         <input type="hidden" name="input_<?php echo $field['id']; ?>" id="<?php echo 'slider-input-'.$field['id']; ?>" value="<?php echo $value ?>">
                         <select style="display: none;" class="gform_slider <?php echo $field["type"]." {$css}"; ?>">
                         <?php foreach( $field['choices'] as $row): ?>
-                            <?php if( !empty( $row['isSelected'] ) && $row['isSelected']) $current_label = $row['text']; ?>
-                            <option value="<?php echo $row['value']; ?>" <?php selected( 1,$row['isSelected']); ?>><?php echo $row['text']; ?></option>
+                            <?php if( $value == $row['value'] ) $current_label = $row['text']; ?>
+                            <option value="<?php echo $row['value']; ?>" <?php selected( $value,$row['value']); ?>><?php echo $row['text']; ?></option>
                         <?php endforeach; ?>
                         </select>
                     <?php endif; ?>
@@ -105,7 +105,7 @@ if ( ! class_exists( 'Izweb_Gravity_Slider' ) ) :
                             var max = select.length;
                             var amount = $( '#<?php echo 'slider-'.$field['id']; ?> input[name="input_<?php echo $field['id']; ?>"]');
                             var value_sl = $( "#<?php echo 'slider-'.$field['id']; ?> .field-value label" );
-                            var slider = $( "<div id='slider'></div>" ).insertAfter( select ).slider({
+                            var slider = $( "<div id='slider_<?php echo $field['id']; ?>'></div>" ).insertAfter( select ).slider({
                                 min: 1,
                                 max: <?php echo sizeof( $field['choices']); ?>,
                                 range: "min",
